@@ -64,4 +64,4 @@ def predict():
     return jsonify({'predictions': results_list})
 
 if __name__ == '__main__':
-    serve(host='0.0.0.0')
+    serve(host='0.0.0.0', port=8888)
