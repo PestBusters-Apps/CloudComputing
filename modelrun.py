@@ -5,15 +5,15 @@ from PIL import Image
 import io
 
 # Load the YOLOv11 model
-model = YOLO('final_train.pt')  # Load your YOLOv11 model
-model.eval()  # Set the model to evaluation mode
+model = YOLO('final_train.pt') 
+model.eval() 
 
 # Initialize Flask app
 app = Flask(__name__)
 
 # Define a transform to preprocess the input image
 transform = transforms.Compose([
-    transforms.Resize((640, 640)),  # Resize to the input size of the model
+    transforms.Resize((640, 640)),  
     transforms.ToTensor(),
 ])
 
@@ -41,23 +41,29 @@ def predict():
     img = Image.open(io.BytesIO(img_bytes)).convert('RGB')
     
     # Preprocess the image
-    img_tensor = transform(img).unsqueeze(0)  # Add batch dimension
+    img_tensor = transform(img).unsqueeze(0)  
 
     # Make prediction
-    results = model(img_tensor)  # Use the model to make predictions
+    results = model(img_tensor)  
 
     # Process predictions
-    predictions = results[0]  # Get the first result (assuming batch size of 1)
+    predictions = results[0]
     results_list = []
     
     for box, score, class_index in zip(predictions.boxes.xyxy, predictions.boxes.conf, predictions.boxes.cls):
-        if score > 0.5:  # Confidence threshold
+        if score >= 0.6:
             x1, y1, x2, y2 = box.tolist()
-            class_name = class_labels.get(int(class_index), "Unknown")  # Get class name or "Unknown"
+            class_name = class_labels.get(int(class_index), "Unknown")
             results_list.append({
                 'bounding_box': [x1, y1, x2, y2],
                 'class_label': class_name,
-                'confidence': score.item()  # Add confidence score
+                'confidence': score.item()
+            })
+        else:
+            results_list.append({
+                'bounding_box': None,
+                'class_label': "Unknown object",
+                'confidence': score.item()
             })
 
     return jsonify({'predictions': results_list})
