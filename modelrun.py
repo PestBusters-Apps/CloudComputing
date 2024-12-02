@@ -60,13 +60,11 @@ def predict():
                     'class_label': class_name,
                     'confidence': float(score)  # Convert to float for JSON
                 })
-            else:
-                results_list.append({
-                    'bounding_box': None,
-                    'class_label': "Unknown object",
-                    'confidence': float(score)
-                })
 
+        # Tambahkan pesan jika tidak ada objek yang memenuhi threshold
+        if not results_list:  # Jika results_list kosong
+            return jsonify({'message': "Tidak ada objek yang terdeteksi, silahkan scan ulang."})
+        
         return jsonify({'predictions': results_list})
     
     except Exception as e:
