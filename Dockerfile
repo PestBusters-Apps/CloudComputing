@@ -10,5 +10,5 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 COPY . .
 
-EXPOSE 8888
-CMD exec gunicorn --bind :$PORT --workers 1 --threads 8 main:app
+EXPOSE 3306
+CMD exec gunicorn --bind :$PORT --workers 1 --threads 8 app:app
